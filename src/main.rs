@@ -1,4 +1,5 @@
 use clap::{Arg, ArgAction};
+use std::process;
 
 fn main() {
     let matches = clap::command!()
@@ -17,13 +18,30 @@ fn main() {
     let d: u32 = matches.get_one("d").copied().unwrap();
 
     let events: Vec<String> = matches.get_many("events").unwrap().cloned().collect();
-    let num_events = events.len() as u32;
+    let num_events = u32::try_from(events.len()).unwrap();
 
     let increment = d / num_events;
 
-    for (i, event) in events.iter().enumerate().map(|(a, b)| (a as u32 + 1, b)) {
-        let higher = i * increment;
-        let lower = higher - increment + 1;
-        println!("{lower:2}-{higher:<2}  {event}");
+    if increment == 0 {
+        eprintln!("ERROR: dice sides must be greater than number of events.");
+        process::exit(1);
     }
+
+    let mut i = 0;
+    for event in events {
+        i += 1;
+        print!("{i:2} - ");
+
+        i += increment - 1;
+        println!("{i:<2}  {event}");
+    }
+
+    if i == d {
+        return;
+    }
+
+    i += 1;
+    print!("{i:2} - ");
+
+    println!("{d:<2}  [Reroll]");
 }
