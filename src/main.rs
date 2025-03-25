@@ -68,9 +68,9 @@ fn main() {
         .map(|s| Event::try_from(s.as_str()).unwrap())
         .collect::<Vec<Event>>();
 
-    let total_weight = events.iter().fold(0, |acc, e| acc + e.weight);
+    let total_weight: u32 = events.iter().fold(0, |acc, e| acc + e.weight);
 
-    let increment = d / total_weight;
+    let increment: u32 = d / total_weight;
 
     if increment == 0 {
         eprintln!("ERROR: dice sides must be greater than number of events.");
@@ -81,7 +81,7 @@ fn main() {
     println!("Events    {}", events.len());
     println!("--------------");
 
-    let mut i = 0;
+    let mut i: u32 = 0;
     for event in events {
         // This event's lower bound.
         i += 1;
