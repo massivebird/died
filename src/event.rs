@@ -11,7 +11,7 @@ impl TryFrom<&str> for Event {
     type Error = String;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
-        let re = Regex::new(r"(?<name>\S+):(?<weight>\d+)$").unwrap();
+        let re = Regex::new(r"(?<name>.+):(?<weight>\d+)$").unwrap();
 
         let Some(caps) = re.captures(value) else {
             return Ok(Self {
