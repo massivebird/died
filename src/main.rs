@@ -38,7 +38,9 @@ fn main() {
     let increment: u32 = d / total_weight;
 
     if increment == 0 {
-        eprintln!("ERROR: dice sides must be greater than or equal to sum of weights. (sides: {d}, sum of weights: {total_weight})");
+        eprintln!(
+            "ERROR: dice sides must be greater than or equal to sum of weights. (sides: {d}, sum of weights: {total_weight})"
+        );
         process::exit(1);
     }
 
