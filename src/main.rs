@@ -6,12 +6,16 @@ mod event;
 
 fn main() {
     let matches = clap::command!()
+        .about("A dice roll event distributor.")
         .args([
             Arg::new("d")
+                .value_name("NUM")
+                .help("Number of sides on the dice.")
                 .short('d')
                 .default_value("20")
                 .value_parser(clap::value_parser!(u32).range(1..)),
             Arg::new("events")
+                .help("Strings representing events.")
                 .action(ArgAction::Append)
                 .required(true)
                 .trailing_var_arg(true),
