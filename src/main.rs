@@ -1,8 +1,20 @@
 use clap::{Arg, ArgAction};
 use event::Event;
-use std::process;
+use std::{io::Write, process};
+use tabled::{
+    Table, Tabled,
+    settings::{Alignment, Style, object::Rows},
+};
 
 mod event;
+
+#[derive(Tabled)]
+struct TableRow {
+    #[tabled(rename = "Range")]
+    range: String,
+    #[tabled(rename = "Event")]
+    event_name: String,
+}
 
 fn main() {
     let matches = clap::command!()
@@ -24,6 +36,10 @@ fn main() {
 
     let d: u32 = matches.get_one("d").copied().unwrap();
 
+    // Number of digits in `d`. Used for styling range strings.
+    let d_width = d.to_string().len();
+
+    // Convert input strings into Event instances.
     let events: Vec<Event> = matches
         .get_many("events")
         .unwrap()
@@ -35,6 +51,7 @@ fn main() {
 
     let total_weight: u32 = events.iter().fold(0, |acc, e| acc + e.weight);
 
+    // Represents the range size corresponding to a weight of 1.
     let increment: u32 = d / total_weight;
 
     if increment == 0 {
@@ -44,29 +61,48 @@ fn main() {
         process::exit(1);
     }
 
-    println!("Dice      d{d}");
-    println!("Events    {}", events.len());
-    println!("--------------");
+    let mut table_rows: Vec<TableRow> = Vec::new();
 
+    // Tracks current position along range `0..=d` as we iterate through
+    // all the events.
     let mut i: u32 = 0;
+
     for event in events {
+        let mut range_buf: Vec<u8> = Vec::new();
+
         // This event's lower bound.
         i += 1;
-        print!("{i:2} - ");
+        write!(range_buf, "{i:d_width$} - ").unwrap();
 
-        // Calculate this event's upper bound.
+        // Compute this event's upper bound.
         i -= 1;
         for _ in 0..event.weight {
             i += increment;
         }
 
-        println!("{i:<2}  {event}");
+        write!(range_buf, "{i}").unwrap();
+
+        table_rows.push(TableRow {
+            range: String::from_utf8(range_buf).unwrap(),
+            event_name: event.name,
+        });
     }
 
     if i != d {
         // Designate remaining values as rerolls.
         i += 1;
-        print!("{i:2} - ");
-        println!("{d:<2}  [Reroll]");
+
+        table_rows.push(TableRow {
+            range: format!("{i:d_width$} - {d}"),
+            event_name: String::from("[Reroll]"),
+        });
     }
+
+    let mut table = Table::new(table_rows);
+
+    table
+        .with(Style::psql())
+        .modify(Rows::first(), Alignment::center());
+
+    println!("{table}");
 }
