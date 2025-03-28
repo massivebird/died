@@ -14,6 +14,8 @@ struct TableRow {
     range: String,
     #[tabled(rename = "Event")]
     event_name: String,
+    #[tabled(rename = "Probability")]
+    probability: String,
 }
 
 fn main() {
@@ -85,6 +87,7 @@ fn main() {
         table_rows.push(TableRow {
             range: String::from_utf8(range_buf).unwrap(),
             event_name: event.name,
+            probability: format!("{:.02}%", f64::from(event.weight) / f64::from(total_weight)),
         });
     }
 
@@ -95,6 +98,7 @@ fn main() {
         table_rows.push(TableRow {
             range: format!("{i:d_width$} - {d}"),
             event_name: String::from("[Reroll]"),
+            probability: String::new(),
         });
     }
 
