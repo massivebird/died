@@ -87,7 +87,7 @@ fn main() {
         table_rows.push(TableRow {
             range: String::from_utf8(range_buf).unwrap(),
             event_name: event.name,
-            probability: format!("{:.02}%", f64::from(event.weight) / f64::from(total_weight)),
+            probability: format!("{:.02}%", f64::from(event.weight) / f64::from(total_weight) * 100.0),
         });
     }
 
