@@ -1,5 +1,9 @@
 # died
 
+<p align="center">
+  <img width="75%" src="./res/preview.png" />
+</p>
+
 A command line utility that calculates dice value ranges for weighted events.
 
 Written in Rust 🦀
